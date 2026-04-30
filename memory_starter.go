@@ -1,6 +1,7 @@
 package agentstarter
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -176,22 +177,8 @@ func parseHeaderExpr(raw string) (map[string]string, error) {
 	if raw == "" {
 		return out, nil
 	}
-	items := strings.Split(raw, "|")
-	for _, item := range items {
-		part := strings.TrimSpace(item)
-		if part == "" {
-			continue
-		}
-		key, value, ok := strings.Cut(part, "::")
-		if !ok {
-			return nil, fmt.Errorf("invalid pair %q, expected key::value", part)
-		}
-		key = strings.TrimSpace(key)
-		value = strings.TrimSpace(value)
-		if key == "" {
-			return nil, fmt.Errorf("empty header key in %q", part)
-		}
-		out[key] = value
+	if err := json.Unmarshal([]byte(raw), &out); err != nil {
+		return nil, fmt.Errorf("invalid headers json: %w", err)
 	}
 	return out, nil
 }

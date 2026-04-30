@@ -132,6 +132,7 @@ func buildOllamaClient(cfg map[string]string) (llmagent.LLM, error) {
 			return nil, fmt.Errorf("invalid headers json: %w", err)
 		}
 	}
+	slog.Info("headers parsed", "headers", headers)
 	if token := strings.TrimSpace(cfg["bearer_token"]); token != "" {
 		headers["Authorization"] = "Bearer " + token
 	}
